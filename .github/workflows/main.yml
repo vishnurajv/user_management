@@ -34,6 +34,7 @@ jobs:
             pip install -r requirements.txt
             export PYTHONPATH=$PWD
             pytest .
+            ruff check . --fix
             make down-v
             make build
             echo "Deleting old image(s)..."
