@@ -2,6 +2,7 @@ from fastapi_keycloak import FastAPIKeycloak, OIDCUser, UsernamePassword, HTTPMe
 from requests import Response
 import requests, json
 
+# over riding fastapi_keyclock admin_user and admin_request method as it is throwing error with json nested attributes
 class CustomFastAPIKeycloak(FastAPIKeycloak):
 
     def __init__(self, *args, **kwargs):
