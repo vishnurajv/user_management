@@ -11,6 +11,9 @@ idp = CustomFastAPIKeycloak(
     callback_uri=settings.KEYCLOAK_CALLBACK_URI
 )
 
+# over riding fastapi_keycloak authorization to support checking permissionLevel
+
+# authorize user or admin
 async def authorize_user_or_admin(
     request: Request,
     user = Depends(idp.get_current_user(extra_fields=['permissionLevel'])),
@@ -35,6 +38,7 @@ async def authorize_user_or_admin(
                 detail="Only admin or same user is permitted to do this action",
             )
 
+# authorize admin
 async def authorize_admin(
     request: Request,
     user = Depends(idp.get_current_user(extra_fields=['permissionLevel'])),

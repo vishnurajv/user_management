@@ -7,6 +7,7 @@ from app.services.auth import idp, authorize_user_or_admin, authorize_admin
 
 router = APIRouter()
 
+# get user with user_id
 @router.get("/user/{user_id}", tags=["user-management"])
 def get_user(user_id: str = None):
     try:
@@ -17,6 +18,7 @@ def get_user(user_id: str = None):
             detail=e.reason,
         )
 
+# list add users
 @router.get("/users", tags=["user-management"])
 def get_users(user: OIDCUser = Depends(authorize_admin)):
     try:
@@ -27,6 +29,7 @@ def get_users(user: OIDCUser = Depends(authorize_admin)):
             detail=e.reason,
         )
 
+# create user
 @router.post("/users", tags=["user-management"])
 def create_user(user_data: CreateUserData):
     try:
@@ -36,7 +39,7 @@ def create_user(user_data: CreateUserData):
             status_code=e.status_code,
             detail=e.reason,
         )
-
+# delete user
 @router.delete("/user/{user_id}", tags=["user-management"])
 def delete_user(user_id: Annotated[str, Body()], user: OIDCUser = Depends(authorize_user_or_admin)):
     try:
@@ -46,7 +49,7 @@ def delete_user(user_id: Annotated[str, Body()], user: OIDCUser = Depends(author
             status_code=e.status_code,
             detail=e.reason,
         )
-
+# update user
 @router.put("/user", tags=["user-management"])
 def update_user(user_data: KeycloakUser, user: OIDCUser = Depends(authorize_user_or_admin)):
     response = idp.custom_update_user(user=user_data)
@@ -58,7 +61,7 @@ def update_user(user_data: KeycloakUser, user: OIDCUser = Depends(authorize_user
             detail=response.json(),
         )
         
-
+# partial update user
 @router.patch("/user", tags=["user-management"])
 def partial_update_user(user_data: PartialKeycloakUser, user: OIDCUser = Depends(authorize_user_or_admin)):
     response = idp.custom_update_user(user=user_data)
@@ -70,6 +73,7 @@ def partial_update_user(user_data: PartialKeycloakUser, user: OIDCUser = Depends
             detail=response.json(),
         )
 
+# change password
 @router.put("/user/change-password", tags=["user-management"])
 def change_password(password_data: PasswordData, user: OIDCUser = Depends(authorize_user_or_admin)):
     try:
@@ -81,6 +85,7 @@ def change_password(password_data: PasswordData, user: OIDCUser = Depends(author
             detail=e.reason,
         )
 
+# user login
 @router.get("/login", tags=["user-management"])
 def login(user: UsernamePassword = Depends()):
     return idp.user_login(username=user.username, password=user.password.get_secret_value())
