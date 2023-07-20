@@ -4,12 +4,13 @@ from app.main import app
 
 client = TestClient(app)
 
-
+# Get access token from keycloak for requests
 def create_access_token():
     response = client.get("/latest/login?username=vishnu&password=password")
     result = response.json()
     return result.get('access_token')
 
+# User create
 def create_user():
     access_token = create_access_token()
     headers = {
@@ -29,7 +30,7 @@ def create_user():
     result = response.json()
     return result.get('id')
 
-
+# Get user with ID
 def test_get_user():
     access_token = create_access_token()
     headers = {
@@ -39,6 +40,7 @@ def test_get_user():
     result = response.json()
     assert response.status_code == 200
 
+# Get all users
 def test_get_users():
     access_token = create_access_token()
     headers = {
@@ -48,6 +50,7 @@ def test_get_users():
     result = response.json()
     assert response.status_code == 200
 
+# Create and Delete the same user
 def test_create_and_delete_user():
     access_token = create_access_token()
     user_id = create_user()
@@ -62,6 +65,7 @@ def test_create_and_delete_user():
     result = response.json()
     assert response.status_code == 200
 
+# User record updation
 def test_update_and_partial_update_user():
     access_token = create_access_token()
     response = client.put(  
