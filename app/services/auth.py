@@ -25,8 +25,12 @@ async def authorize_user_or_admin(
     if user.extra_fields['permissionLevel'] == "Admin":
         return user
     elif user_id == user.sub:
-        if body.get('attributes') and body.get('attributes').get('permissionLevel') != user.extra_fields.get('permissionLevel'):
-            raise HTTPException(
+        permissionLevel = user.extra_fields.get('permissionLevel')
+        if  (
+                body.get('attributes') and
+                body.get('attributes').get('permissionLevel') != permissionLevel
+            ):
+                raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Only admin has permission to update permissionLevel",
                 )
