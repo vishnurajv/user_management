@@ -31,6 +31,7 @@ jobs:
           script: |  
             cd ${{ secrets.PROJECT_PATH }} 
             git pull origin main
+            pip install -r requirements.txt
             export PYTHONPATH=$PWD
             pytest .
             make down-v
