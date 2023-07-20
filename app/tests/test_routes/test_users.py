@@ -15,10 +15,14 @@ def create_user():
     headers = {
         'Authorization': 'Bearer {}'.format(access_token)
     }
-    form_data = {}
     response = client.post(  
-        "/latest/users?first_name=test2&last_name=test2&email=test3%40test.com&password=password", 
-        data=form_data,
+        "/latest/users", 
+        json={
+          "firstName": "test2",
+          "lastName": "test2",
+          "email": "test3@test.com",
+          "password": "password"
+        },
         headers={ 'Content-Type': 'application/json'}
     )
     assert response.status_code == 200

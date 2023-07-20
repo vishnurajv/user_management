@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Body
 from app.services.custom_fastapi_keycloak import CustomFastAPIKeycloak
 from fastapi import Depends, HTTPException, status, Request
-from pydantic import SecretStr
 from fastapi_keycloak import OIDCUser, UsernamePassword
-from app.models.users import KeycloakUser, PartialKeycloakUser, PasswordData
+from app.models.users import KeycloakUser, PartialKeycloakUser, PasswordData, CreateUserData
 from app.core.config import settings
 from typing_extensions import Annotated
 
@@ -75,9 +74,9 @@ def get_users(user: OIDCUser = Depends(authorize_admin)):
         )
 
 @router.post("/users", tags=["user-management"])
-def create_user(first_name: str, last_name: str, email: str, password: SecretStr, id: str = None):
+def create_user(user_data: CreateUserData):
     try:
-        return idp.create_user(first_name=first_name, last_name=last_name, username=email, email=email, password=password.get_secret_value())
+        return idp.create_user(first_name=user_data.firstName, last_name=user_data.lastName, username=user_data.email, email=user_data.email, password=user_data.password)
     except Exception as e:
         raise HTTPException(
             status_code=e.status_code,

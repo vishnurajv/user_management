@@ -12,6 +12,12 @@ class KeycloakUser(BaseModel):
     email: str
     attributes: Optional[Attributes]
 
+class CreateUserData(BaseModel):
+    firstName: str
+    lastName: str
+    email: str
+    password: str
+
 class PartialKeycloakUser(BaseModel):
     id: str
     firstName: Optional[str]
