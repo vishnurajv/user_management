@@ -1,8 +1,12 @@
-from fastapi_keycloak import FastAPIKeycloak, OIDCUser, UsernamePassword, HTTPMethod, KeycloakGroup, KeycloakUser
+from fastapi_keycloak import FastAPIKeycloak, HTTPMethod, KeycloakUser
 from requests import Response
-import requests, json
+import requests
+import json
 
-# over riding fastapi_keyclock admin_user and admin_request method as it is throwing error with json nested attributes
+"""
+over riding fastapi_keyclock admin_user and admin_request method 
+as it is throwing error with json nested attributes
+"""
 class CustomFastAPIKeycloak(FastAPIKeycloak):
 
     def __init__(self, *args, **kwargs):
@@ -15,8 +19,8 @@ class CustomFastAPIKeycloak(FastAPIKeycloak):
             data: dict = None,
             content_type: str = "application/json",
     ) -> Response:
-        """Private method that is the basis for any requests requiring admin access to the api. Will append the
-        necessary `Authorization` header
+        """Private method that is the basis for any requests requiring admin
+        access to the api. Will append the necessary `Authorization` header
 
         Args:
             url (str): The URL to be called
@@ -35,7 +39,8 @@ class CustomFastAPIKeycloak(FastAPIKeycloak):
             data.__dict__['attributes'] = data.__dict__['attributes'].__dict__
         body = json.dumps(data.__dict__)
         return requests.request(
-            method=method.name, url=url, data=body, headers=headers, timeout=self.timeout,
+            method=method.name, url=url,
+            data=body, headers=headers, timeout=self.timeout,
         )
 
     def custom_update_user(self, user: KeycloakUser):
@@ -48,9 +53,10 @@ class CustomFastAPIKeycloak(FastAPIKeycloak):
             KeycloakUser: The updated user
 
         Raises:
-            KeycloakError: If the resulting response is not a successful HTTP-Code (>299)
+            KeycloakError: If the response has HTTP-Code (>299)
 
-        Notes: - You may alter any aspect of the user object, also the requiredActions for instance. There is no
+        Notes: - You may alter any aspect of the user object,
+        also the requiredActions for instance. There is no
         explicit function for updating those as it is a user update in essence
         """
         response = self._custom_admin_request(

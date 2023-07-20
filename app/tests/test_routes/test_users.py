@@ -13,7 +13,7 @@ def create_access_token():
 # User create
 def create_user():
     access_token = create_access_token()
-    headers = {
+    {
         'Authorization': 'Bearer {}'.format(access_token)
     }
     response = client.post(  
@@ -36,8 +36,11 @@ def test_get_user():
     headers = {
         'Authorization': 'Bearer {}'.format(access_token)
     }
-    response = client.get('/latest/user/514a6071-1714-4ee6-8374-472c080d8a94', headers=headers)
-    result = response.json()
+    response = client.get(
+        '/latest/user/514a6071-1714-4ee6-8374-472c080d8a94',
+        headers=headers
+    )
+    response.json()
     assert response.status_code == 200
 
 # Get all users
@@ -47,7 +50,7 @@ def test_get_users():
         'Authorization': 'Bearer {}'.format(access_token)
     }
     response = client.get('/latest/users', headers=headers)
-    result = response.json()
+    response.json()
     assert response.status_code == 200
 
 # Create and Delete the same user
@@ -62,7 +65,7 @@ def test_create_and_delete_user():
         }
     )
 
-    result = response.json()
+    response.json()
     assert response.status_code == 200
 
 # User record updation
@@ -81,7 +84,7 @@ def test_update_and_partial_update_user():
             "email": "test@test1.com"
         }
     )
-    result = response.json()
+    response.json()
     assert response.status_code == 200
     response = client.patch(  
         "/latest/user", 
@@ -96,5 +99,5 @@ def test_update_and_partial_update_user():
             "email": "test@test.com"
         }
     )
-    result = response.json()
+    response.json()
     assert response.status_code == 200
