@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+   bot:
+     build: .
+     volumes:
+       - .:/app
+     ports:
+       - "8443:8443"
+     command: uvicorn app.main:app --reload --port 8443 --host 0.0.0.0
