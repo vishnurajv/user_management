@@ -29,8 +29,10 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script_stop: true
           script: |  
-            cd test
+            cd ${{ secrets.PROJECT_PATH }} 
             git pull origin main
+            export PYTHONPATH=$PWD
+            pytest .
             make down-v
             make build
             echo "Deleting old image(s)..."
