@@ -1,10 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from app.services.custom_fastapi_keycloak import CustomFastAPIKeycloak
 from fastapi import Depends, HTTPException, status, Request
 from pydantic import SecretStr
 from fastapi_keycloak import OIDCUser, UsernamePassword
 from app.models.users import KeycloakUser, PartialKeycloakUser, PasswordData
 from app.core.config import settings
+from typing_extensions import Annotated
 
 idp = CustomFastAPIKeycloak(
     server_url=settings.KEYCLOAK_SERVER_URL,
@@ -19,10 +20,13 @@ async def authorize_user_or_admin(
     request: Request,
     user = Depends(idp.get_current_user(extra_fields=['permissionLevel'])),
 ):
-    body = await request.json()
+    user_id = request.path_params.get('user_id')
+    if not user_id:
+        body = await request.json()
+        user_id = (body.get('id') or body.get('user_id'))
     if user.extra_fields['permissionLevel'] == "Admin":
         return user
-    elif (body.get('id') or body.get('user_id')) == user.sub:
+    elif user_id == user.sub:
         if body.get('attributes') and body.get('attributes').get('permissionLevel') != user.extra_fields.get('permissionLevel'):
             raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
@@ -81,7 +85,7 @@ def create_user(first_name: str, last_name: str, email: str, password: SecretStr
         )
 
 @router.delete("/user/{user_id}", tags=["user-management"])
-def delete_user(user_id: str, user: OIDCUser = Depends(authorize_user_or_admin)):
+def delete_user(user_id: Annotated[str, Body()], user: OIDCUser = Depends(authorize_user_or_admin)):
     try:
         return idp.delete_user(user_id=user_id)
     except Exception as e:
